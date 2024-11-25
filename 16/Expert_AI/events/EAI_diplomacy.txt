@@ -1,0 +1,1074 @@
+﻿add_namespace = EAI_DM
+
+############################################################################################################
+# Expert AI mod - diplomacy events
+############################################################################################################
+
+### AI events
+
+# SPR: add neutrality idea to both sides
+country_event = { 
+	id = EAI_DM.12
+	hidden = yes
+	fire_only_once = yes
+	trigger = {
+		tag = SPR is_ai = yes
+		has_global_flag = spanish_civil_war
+		has_global_flag = EAI_neutral_spr
+	}
+	immediate = {
+		add_ideas = EAI_neutrality_idea_SPR
+		every_country = {
+			limit = { is_ai = yes original_tag = SPR }
+			add_ideas = EAI_neutrality_idea_SPR
+		}
+
+		if = { limit = { has_country_flag = EAI_diplomacy_event_logging } log = "[GetYear] [GetMonth] | AI | [Root.GetName] | DIPLO-AI-EVENT: add neutrality" } 
+	}
+	option = { name = "OK" }
+}
+
+# SPR: remove SPR neutrality 
+country_event = { 
+	id = EAI_DM.13
+	hidden = yes
+	fire_only_once = yes
+	trigger = {
+		original_tag = SPR is_ai = yes
+		has_global_flag = scw_over
+
+		OR = {
+			has_war = yes
+			AND = {
+				has_government = fascism
+				OR = {
+					SOV = { has_capitulated = yes }
+					SOV = { exists = no }
+					SOV = { is_subject = yes }
+					SOV = { has_government = fascism }
+					GER = { is_in_faction_with = SOV }
+					
+					POR = { is_in_faction_with = ENG }
+					POR = { has_war_with = ENG }
+				}
+			}
+			AND = {
+				has_government = communism
+				OR = {
+					GER = { has_capitulated = yes }
+					GER = { exists = no }
+					GER = { is_subject = yes }
+					GER = { has_government = communism }
+					SOV = { is_in_faction_with = GER }
+				}
+			}
+		}
+	}
+	immediate = {
+		remove_ideas = EAI_neutrality_idea_SPR
+
+		if = { limit = { has_country_flag = EAI_diplomacy_event_logging } log = "[GetYear] [GetMonth] | AI | [Root.GetName] | DIPLO-AI-EVENT: remove neutrality" } 
+	}
+	option = { name = "OK" }
+}
+
+# ENG: force wardec on iraq
+country_event = { 
+	id = EAI_DM.20
+	hidden = yes
+	fire_only_once = yes
+	mean_time_to_happen = { days = 2 }
+	trigger = {
+		is_ai = yes 
+		tag = ENG 
+		is_historical_focus_on = yes
+		has_completed_focus = uk_iraq_focus
+		NOT = {
+			has_war_with = IRQ
+			any_enemy_country = {
+				any_of_scopes = { array = controlled_states
+					region = 28
+				}
+			}
+		}
+		has_army_manpower = { size > 700000 }
+	}
+	immediate = {
+		declare_war_on = { target = IRQ type = take_state_focus }
+	}
+	option = {}
+}
+
+# neutral countries: join allies
+country_event = { 
+	id = EAI_DM.21
+	hidden = yes
+	mean_time_to_happen = { 
+		days = 180 
+		modifier = {
+			factor = 0.25
+
+			ENG = { 
+				has_government = democratic
+				NOT = { EAI_is_not_independent = yes }
+				any_enemy_country = { 
+					original_tag = GER 
+					has_government = fascism 
+					is_faction_leader = yes
+					OR = {
+						surrender_progress > 0.5
+						ENG = { alliance_strength_ratio > 2.0 }
+					}
+				}
+			}
+		}
+	}
+	trigger = {
+		is_ai = yes
+
+		NOT = { has_country_flag = EAI_neutral_joins_allies_triggered }
+
+		NOT = { has_global_flag = EAI_performance_mode }
+
+		NOT = { has_global_flag = EAI_neutral_south_america }
+
+		is_historical_focus_on = yes
+
+		threat > 0.99
+
+		date > 1942.1.1
+
+		### this country
+
+		OR = { has_government = neutrality has_government = democratic }
+
+		NOT = { 
+			is_in_faction = yes 
+			EAI_neutral_country = yes
+			EAI_is_not_independent = yes
+		}
+
+		NOT = {
+			any_neighbor_country = {
+				has_war_with = ENG
+				strength_ratio = { tag = ROOT ratio > 2.0 }
+			}
+		}
+
+		### allies
+
+		ENG = { 
+			has_government = democratic
+			any_enemy_country = { is_major = yes }
+		}
+
+		USA = {
+			has_government = democratic
+			is_major = yes
+			surrender_progress < 0.2
+			is_in_faction_with = ENG
+			has_navy_size = { size > 200 }
+			NOT = { EAI_is_not_independent = yes }
+		}
+
+		### other conditions
+
+		OR = {
+			AND = { # south america
+				capital_scope = { is_on_continent = south_america }
+				OR = {
+					AND = { date > 1944.1.1 }
+					AND = { date > 1942.2.1 original_tag = BRA }
+				}
+			}
+			AND = { # rest of the world
+				any_country = { 
+					OR = { original_tag = ENG original_tag = USA }
+					has_government = democratic
+					is_major = yes
+					is_faction_leader = yes
+
+					any_enemy_country = { 
+						original_tag = GER 
+						has_government = fascism 
+						is_faction_leader = yes
+						surrender_progress > 0.9
+					}
+				}
+			}
+		}
+	}
+	immediate = {
+		set_country_flag = { flag = EAI_neutral_joins_allies value = 1 days = 180 }
+		set_country_flag = EAI_neutral_joins_allies_triggered
+
+		if = { limit = { has_country_flag = EAI_diplomacy_event_logging } log = "[GetYear] [GetMonth] | AI | [Root.GetName] | DIPLO-AI-EVENT: join allies" } 
+	}
+	option = {}
+}
+
+# neutral countries: join axis
+country_event = { 
+	id = EAI_DM.22
+	hidden = yes
+	mean_time_to_happen = { days = 100 }
+	trigger = {
+		always = no
+
+		is_ai = yes
+
+		NOT = { has_country_flag = EAI_neutral_joins_axis_triggered }
+
+		NOT = { has_global_flag = EAI_performance_mode }
+
+		NOT = { has_global_flag = EAI_neutral_south_america }
+
+		is_historical_focus_on = yes
+
+		threat > 0.99
+
+		date > 1942.1.1
+
+		### this country
+
+		OR = { has_government = fascism }
+
+		NOT = { 
+			is_in_faction = yes 
+			EAI_neutral_country = yes
+			EAI_is_not_independent = yes
+		}
+
+		NOT = {
+			any_neighbor_country = {
+				has_war_with = GER
+				strength_ratio = { tag = ROOT ratio > 2.0 }
+			}
+		}
+
+		any_neighbor_country = { is_in_faction_with = GER }
+
+		### axis
+
+		GER = { 
+			any_enemy_country = { is_major = yes }
+			is_major = yes
+			has_government = fascism
+			is_faction_leader = yes
+			NOT = { 
+				EAI_is_not_independent = yes 
+				surrender_progress > 0.05
+			}
+		}
+
+		### other conditions
+
+		OR = {
+			AND = { # south america
+				capital_scope = { is_on_continent = south_america }
+				date > 1943.1.1
+
+				OR = {
+					ENG = { OR = { EAI_is_not_independent = yes has_government = fascism } }
+					USA = { OR = { EAI_is_not_independent = yes has_government = fascism } }
+				}
+			}
+			AND = { # rest of the world
+				OR = {
+					AND = {
+						ENG = { OR = { EAI_is_not_independent = yes has_government = fascism } }
+						USA = { OR = { EAI_is_not_independent = yes has_government = fascism } }
+					}
+				
+					SOV = { OR = { EAI_is_not_independent = yes has_government = fascism } }
+				}
+			}
+		}
+	}
+	immediate = {
+		set_country_flag = { flag = EAI_neutral_joins_axis value = 1 days = 180 }
+		set_country_flag = EAI_neutral_joins_axis_triggered
+
+		if = { limit = { has_country_flag = EAI_diplomacy_event_logging } log = "[GetYear] [GetMonth] | AI | [Root.GetName] | DIPLO-AI-EVENT: join axis" } 
+	}
+	option = {}
+}
+
+# ger wardec on sov: call all minors immediately to avoid a SOV AI frontline issue
+country_event = { 
+	id = EAI_DM.23
+	hidden = yes
+	fire_only_once = yes
+	is_triggered_only = yes
+	immediate = {
+		for_each_scope_loop = { array = GER.allies
+			
+			if = { limit = { is_neighbor_of = SOV is_ai = yes }
+
+				add_to_war = {
+					targeted_alliance = GER
+					enemy = SOV
+					hostility_reason = asked_to_join
+				}
+			}
+		}
+	}
+	option = { name = "OK" }
+}
+
+# GER: ask FIN to join war vs USSR
+country_event = { 
+	id = EAI_DM.24
+	title = EAI_DM.24.t
+	desc = EAI_DM.24.d
+	picture = "GFX_report_event_generic_sign_treaty2"
+	fire_only_once = yes
+	
+	trigger = {
+		NOT = { has_dlc = "Arms Against Tyranny" }
+		is_historical_focus_on = yes
+		focus_progress = { focus = GER_ussr_war_goal progress > 0 }
+		NOT = { has_completed_focus = GER_ussr_war_goal }
+
+		FIN = {
+			has_war = no
+			is_in_faction = no
+			is_subject = no
+			NOT = { has_government = communism }
+		}
+		
+		NOT = { 146 = { is_controlled_by = FIN } }
+
+		if = { limit = { GER = { has_war_with = NOR } }
+		
+			OR = { # dont join if norway hasnt fallen - otherwise finland will throw its entire army against norway
+				NOR = { has_capitulated = yes }
+				NOR = { exists = no }
+				NOR = { is_subject = yes }
+				NOR = { has_government = fascism }
+				FIN = { has_war_with = NOR }
+			}
+		}
+	}
+
+	# yes
+	option = { name = EAI_DM.24.o1 
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 100
+				is_historical_focus_on = yes
+			}
+		}
+	
+		FIN = { country_event = EAI_DM.25 }
+	}
+
+	# no
+	option = { name = EAI_DM.24.o2
+	
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+# FIN: accept GER request to join war
+country_event = { 
+	id = EAI_DM.25
+	title = EAI_DM.25.t
+	desc = EAI_DM.25.d
+	picture = "GFX_report_event_generic_sign_treaty2"
+	is_triggered_only = yes
+
+	# accept
+	option = { name = EAI_DM.25.o1 
+
+		ai_chance = {
+			factor = 1
+			modifier = {
+				factor = 100
+				is_historical_focus_on = yes
+				GER = { has_army_manpower = { size > 2000000 } }
+			}
+			modifier = {
+				factor = 3
+				GER = { has_army_manpower = { size > 2000000 } }
+			}
+			modifier = {
+				factor = 3
+				GER = { has_army_manpower = { size > 3000000 } }
+			}
+		}
+	
+		GER = { set_country_flag = { flag = EAI_FIN_joins_war_on_SOV value = 1 days = 365 } }
+
+		GER = { country_event = EAI_DM.26 }
+	}
+
+	# decline
+	option = { name = EAI_DM.25.o12
+
+		ai_chance = {
+			factor = 1
+		}
+	
+		GER = { country_event = EAI_DM.27 }
+	}
+}
+
+# FIN: accepts
+country_event = { 
+	id = EAI_DM.26
+	title = EAI_DM.26.t
+	desc = EAI_DM.26.d
+	picture = "GFX_report_event_generic_sign_treaty2"
+	is_triggered_only = yes
+
+	# decline
+	option = { name = EAI_DM.26.o1 
+	
+	}
+}
+
+# FIN: declines
+country_event = { 
+	id = EAI_DM.27
+	title = EAI_DM.27.t
+	desc = EAI_DM.27.d
+	picture = "GFX_report_event_generic_sign_treaty2"
+	is_triggered_only = yes
+
+	# accept
+	option = { name = EAI_DM.27.o1 
+	
+	}
+}
+
+country_event = { 
+	id = EAI_DM.28
+	hidden = yes
+	is_triggered_only = yes
+	immediate = {
+		GER = { 
+			FIN = { 
+				add_to_war = { targeted_alliance = PREV enemy = SOV hostility_reason = asked_to_join } 
+			}
+		}
+	}
+	option = {}
+}
+
+#######################################################
+# AI border gore fixes
+#######################################################
+
+add_namespace = EAI_DM_borders
+
+# make sure GER controls northern france
+country_event = { 
+	id = EAI_DM_borders.1
+	hidden = yes
+	mean_time_to_happen = { days = 20 }
+	trigger = {
+		tag = GER
+		
+		is_ai = yes
+		
+		is_historical_focus_on = yes
+		
+		has_war_with = FRA 
+		
+		FRA = { has_capitulated = yes }
+		
+		any_of_scopes = { array = FRA.owned_states # GER doesnt control historical states
+
+			OR = { region = 19 region = 20 region = 5 }
+			NOT = { state = 31 state = 22 state = 25 state = 33 state = 26 state = 20 state = 21 state = 735 state = 32 }
+			
+			CONTROLLER = { 
+				NOT = { tag = GER }
+				is_in_faction_with = GER 
+				is_ai = yes 
+				has_full_control_of_state = PREV 
+				NOT = { PREV = { is_owned_by = PREV } }
+			}
+		}
+	}
+	immediate = {
+		for_each_scope_loop = { array = FRA.owned_states
+			
+			if = {
+				limit = {
+					OR = { region = 19 region = 20 region = 5 }
+					NOT = { state = 31 state = 22 state = 25 state = 33 state = 26 state = 20 state = 21 state = 735 state = 32 }
+					
+					CONTROLLER = { 
+						NOT = { tag = GER }
+						is_in_faction_with = GER 
+						is_ai = yes 
+						has_full_control_of_state = PREV 
+						NOT = { PREV = { is_owned_by = PREV } }
+					}
+				}
+
+				ROOT = { set_state_controller = PREV }
+			}
+		}
+
+		if = { limit = { has_country_flag = EAI_diplomacy_event_logging } log = "[GetYear] [GetMonth] | AI | [Root.GetName] | DIPLO-AI-EVENT: partition FRA" } 
+	}
+	option = { name = "OK" }
+}
+
+# yugoslavia invasion AI fix (unnecessary?)
+country_event = { 
+	id = EAI_DM_borders.2
+	hidden = yes
+	mean_time_to_happen = { days = 2 }
+	trigger = {
+		always = no
+
+		tag = GER
+		
+		is_ai = yes
+		
+		is_historical_focus_on = yes
+		
+		has_war_with = YUG
+
+		any_of_scopes = { array = YUG.owned_states
+
+			OR = { state = 102 state = 731 region = 24 }
+			NOT = { state = 103 state = 163 state = 44 }
+			
+			CONTROLLER = {
+				is_ai = yes
+				NOT = { tag = GER owns_state = PREV } 
+				is_in_faction_with = GER 
+				has_full_control_of_state = PREV
+				PREV = { NOT = { is_core_of = PREV is_claimed_by = PREV } } 
+			}
+		}
+	}
+	immediate = {
+		for_each_scope_loop = { array = YUG.owned_states
+
+			if = {
+				limit = {
+					OR = { state = 102 state = 731 region = 24 }
+					NOT = { state = 103 state = 163 state = 44 }
+					
+					CONTROLLER = {
+						is_ai = yes
+						NOT = { tag = GER owns_state = PREV } 
+						is_in_faction_with = GER 
+						has_full_control_of_state = PREV
+						PREV = { NOT = { is_core_of = PREV is_claimed_by = PREV } } 
+					}
+				}
+				
+				ROOT = { set_state_controller = PREV }
+			}
+		}
+
+		if = { limit = { has_country_flag = EAI_diplomacy_event_logging } log = "[GetYear] [GetMonth] | AI | [Root.GetName] | DIPLO-AI-EVENT: YUG invasion fix" } 
+	}
+	option = { name = "OK" }
+}
+
+# division of greece
+country_event = { 
+	id = EAI_DM_borders.3
+	hidden = yes
+	mean_time_to_happen = { days = 2 }
+	trigger = {
+		always = no
+
+		tag = ITA
+		
+		is_ai = yes
+		
+		is_historical_focus_on = yes
+		
+		has_war_with = GRE 
+		
+		GRE = { has_capitulated = yes }
+		
+		any_of_scopes = { array = GRE.owned_states
+
+			CONTROLLER = { 
+				is_ai = yes 
+				NOT = { tag = ROOT } 
+				has_full_control_of_state = PREV 
+				PREV = { NOT = { is_core_of = PREV is_claimed_by = PREV } } 
+				is_in_faction_with = ITA
+			}
+		}
+	}
+	immediate = {
+		for_each_scope_loop = { array = GRE.owned_states
+			
+			if = {
+				limit = { 
+					CONTROLLER = { 
+						is_ai = yes 
+						NOT = { tag = ROOT } 
+						has_full_control_of_state = PREV 
+						PREV = { NOT = { is_core_of = PREV is_claimed_by = PREV } } 
+						is_in_faction_with = ITA
+					}
+				}
+				
+				ROOT = { set_state_controller = PREV }
+			}
+		}
+
+		if = { limit = { has_country_flag = EAI_diplomacy_event_logging } log = "[GetYear] [GetMonth] | AI | [Root.GetName] | DIPLO-AI-EVENT: GRE invasion fix" } 
+	}
+	option = { name = "OK" }
+}
+
+# make sure GER controls norway
+country_event = { 
+	id = EAI_DM_borders.4
+	hidden = yes
+	fire_only_once = yes
+	trigger = {
+		always = no
+		
+		tag = GER 
+		
+		is_ai = yes
+		
+		is_historical_focus_on = yes
+		
+		has_war_with = NOR 
+		
+		NOR = { has_capitulated = yes }
+
+		any_of_scopes = { array = NOR.owned_states
+
+			OR = { state = 142 state = 110 state = 143 state = 144 }
+			CONTROLLER = {
+				is_ai = yes
+				NOT = { tag = GER } 
+				is_in_faction_with = GER 
+				has_full_control_of_state = PREV
+			}
+		}
+
+		NOT = {
+			any_of_scopes = { array = NOR.owned_states
+
+				OR = { state = 142 state = 110 state = 143 state = 144 }
+				CONTROLLER = { has_war_with = GER }
+			}
+		}
+	}
+	immediate = {
+		for_each_scope_loop = { array = NOR.owned_states
+
+			if = {
+				limit = {
+					OR = { state = 142 state = 110 state = 143 state = 144 }
+					CONTROLLER = {
+						is_ai = yes
+						NOT = { tag = GER } 
+						is_in_faction_with = GER 
+						has_full_control_of_state = PREV
+					}
+				}
+				
+				ROOT = { set_state_controller = PREV }
+			}
+		}
+
+		if = { limit = { has_country_flag = EAI_diplomacy_event_logging } log = "[GetYear] [GetMonth] | AI | [Root.GetName] | DIPLO-AI-EVENT: NOR invasion fix" } 
+	}
+	option = { name = "OK" }
+}
+
+# aggressive GER setting: give southern france to ITA
+country_event = { 
+	id = EAI_DM_borders.5
+	hidden = yes
+	fire_only_once = yes
+	trigger = {
+		has_global_flag = EAI_aggressive_GER
+		
+		tag = ITA
+		
+		is_ai = yes
+		
+		is_historical_focus_on = yes
+		
+		is_in_faction_with = GER
+		
+		has_war_with = FRA
+		
+		FRA = { has_capitulated = yes }
+		
+		any_of_scopes = { array = FRA.owned_states
+
+			OR = { state = 31 state = 22 state = 25 state = 33 state = 26 state = 20 state = 21 state = 735 state = 32 }
+			CONTROLLER = {
+				is_ai = yes
+				NOT = { tag = GER } 
+				is_in_faction_with = GER 
+				has_full_control_of_state = PREV
+			}
+		}
+	}
+	immediate = {
+		for_each_scope_loop = { array = FRA.owned_states
+			
+			if = {
+				limit = {
+					OR = { state = 31 state = 22 state = 25 state = 33 state = 26 state = 20 state = 21 state = 735 state = 32 }
+					CONTROLLER = {
+						is_ai = yes
+						NOT = { tag = GER } 
+						is_in_faction_with = GER 
+						has_full_control_of_state = PREV
+					}
+				}
+
+				ROOT = { set_state_controller = PREV }
+			}
+		}
+
+		if = { limit = { has_country_flag = EAI_diplomacy_event_logging } log = "[GetYear] [GetMonth] | AI | [Root.GetName] | DIPLO-AI-EVENT: partition FRA" } 
+	}
+	option = { name = "OK" }
+}
+
+# make sure GER takes control of eastern front states
+country_event = { 
+	id = EAI_DM_borders.6
+	hidden = yes
+	mean_time_to_happen = { days = 20 }
+	trigger = {
+		original_tag = GER
+		
+		is_faction_leader = yes
+		
+		is_major = yes
+		
+		is_ai = yes
+		
+		is_historical_focus_on = yes
+		
+		has_war_with = SOV
+		
+		any_of_scopes = { array = SOV.owned_states
+
+			any_neighbor_state = { is_controlled_by = GER }
+			
+			CONTROLLER = { 
+				NOT = { tag = ROOT } 
+				has_full_control_of_state = PREV 
+				PREV = { NOT = { is_core_of = PREV is_claimed_by = PREV } } 
+				is_ai = yes 
+				is_in_faction_with = GER
+			}
+		}
+	}
+	immediate = {
+		for_each_scope_loop = { array = SOV.owned_states
+			
+			if = {
+				limit = {
+					any_neighbor_state = { is_controlled_by = GER }
+				
+					CONTROLLER = { 
+						NOT = { tag = ROOT } 
+						has_full_control_of_state = PREV 
+						PREV = { NOT = { is_core_of = PREV is_claimed_by = PREV } } 
+						is_ai = yes 
+						is_in_faction_with = GER
+					}
+				}
+				
+				GER = { set_state_controller = PREV }
+			}
+		}
+
+		if = { limit = { has_country_flag = EAI_diplomacy_event_logging } log = "[GetYear] [GetMonth] | AI | [Root.GetName] | DIPLO-AI-EVENT: east front state priority" } 
+	}
+	option = { name = "OK" }
+}
+
+# puppet EGY setting: transfer conquered territories to ENG
+country_event = { 
+	id = EAI_DM_borders.7
+	hidden = yes
+	mean_time_to_happen = { days = 20 }
+	trigger = {
+		original_tag = EGY
+
+		is_ai = yes
+
+		ENG = { is_ai = yes }
+		
+		is_puppet_of = ENG
+		
+		any_of_scopes = { array = controlled_states
+
+			is_fully_controlled_by = ROOT
+			NOT = { is_owned_by = ROOT }
+		}
+	}
+	immediate = {
+		for_each_scope_loop = { array = controlled_states
+		
+			if = {
+				limit = {
+					is_fully_controlled_by = ROOT
+					NOT = { is_owned_by = ROOT }
+				}
+				
+				ENG = { set_state_controller = PREV }
+			}
+		}
+	}
+	option = {}
+}
+
+# JAP puppets: transfer conquered territories to JAP
+country_event = { 
+	id = EAI_DM_borders.8
+	hidden = yes
+	mean_time_to_happen = { days = 20 }
+	trigger = {
+		is_ai = yes
+
+		JAP = { is_ai = yes }
+		
+		is_puppet_of = JAP
+		
+		any_of_scopes = { array = controlled_states
+
+			is_fully_controlled_by = ROOT
+			NOT = { is_owned_by = ROOT }
+		}
+	}
+	immediate = {
+		for_each_scope_loop = { array = controlled_states
+		
+			if = {
+				limit = {
+					is_fully_controlled_by = ROOT
+					NOT = { is_owned_by = ROOT }
+				}
+				
+				JAP = { set_state_controller = PREV }
+			}
+		}
+	}
+	option = {}
+}
+
+#######################################################
+# misc
+#######################################################
+
+# ITA: Creation of Italian East Africa puppet to stop AI Italy from sending its army to Ethiopia
+country_event = {
+	id = EAI_DM.58
+	title = EAI_DM.58.t
+	desc = EAI_DM.58.d
+	picture = GFX_report_event_military_planning
+	is_triggered_only = yes
+
+	option = {
+		name = EAI_DM.58.o1
+		
+		ETH = { set_cosmetic_tag = ETH_IEA }
+		
+		hidden_effect = {
+			if = { limit = { ETH = { exists = no } }
+				release = ETH
+				puppet = ETH
+			}
+		}
+		
+		ETH = {
+			create_country_leader = {
+				name = "Pietro Badoglio"
+				desc = "Pietro_Badoglio_desc"
+				picture = GFX_ETH_pietro_badoglio
+				expire = "1965.1.1"
+				ideology = nazism
+				traits = { }
+			}
+			
+			transfer_state = 559
+			transfer_state = 550
+		}
+	}
+	option = { 
+		name = EAI_DM.58.o2 
+	
+		trigger = { is_ai = no }
+	}
+}
+
+# debug
+country_event = {
+	id = EAI_DM.1000
+	title = EAI_DM.1000.t
+	desc = EAI_DM.1000.d
+	picture = GFX_report_event_chinese_soldiers_fighting
+	is_triggered_only = yes
+	option = { name = "OK" }
+}
+
+#######################################################
+# random generic nation ideology setting
+#######################################################
+
+# makes the AI choose an ideology to focus on
+country_event = {
+	id = EAI_DM.1230
+	hidden = yes
+
+	mean_time_to_happen = { days = 2 }
+
+	trigger = {
+		is_ai = yes
+		has_global_flag = EAI_random_ideology
+		has_focus_tree = generic_focus
+		NOT = {
+			has_country_flag = EAI_democratic_focus
+			has_country_flag = EAI_communist_focus
+			has_country_flag = EAI_fascist_focus
+			has_country_flag = EAI_neutral_focus
+		}
+	}
+
+	option = { name = "democratic"
+		trigger = { 
+			OR = {
+				has_available_idea_with_traits = { idea = democratic_reformer limit = 1 } 
+				has_idea_with_trait = democratic_reformer
+			}
+		}
+
+		ai_chance = {
+			base = 1
+
+			modifier = { add = 1 EAI_democratic_nation = yes }
+			modifier = { add = 1 check_variable = { party_popularity@democratic > 0.8 } }
+			modifier = { add = 1 check_variable = { party_popularity@democratic > 0.6 } }
+			modifier = { add = 1 check_variable = { party_popularity@democratic > 0.4 } }
+			modifier = { add = 1 check_variable = { party_popularity@democratic > 0.2 } }
+		}
+
+		set_country_flag = EAI_democratic_focus
+
+		if = { limit = { has_country_flag = EAI_diplomacy_event_logging } log = "[GetYear] [GetMonth] | AI | [Root.GetName] | IDEOLOGY FOCUS: democratic" } 
+	}
+
+	option = { name = "communist"
+		trigger = { 
+			OR = {
+				has_available_idea_with_traits = { idea = communist_revolutionary limit = 1 } 
+				has_idea_with_trait = communist_revolutionary
+			}
+		}
+
+		ai_chance = {
+			base = 1
+
+			modifier = { add = 1 EAI_communist_nation = yes }
+			modifier = { add = 1 check_variable = { party_popularity@communism > 0.8 } }
+			modifier = { add = 1 check_variable = { party_popularity@communism > 0.6 } }
+			modifier = { add = 1 check_variable = { party_popularity@communism > 0.4 } }
+			modifier = { add = 1 check_variable = { party_popularity@communism > 0.2 } }
+		}
+
+		set_country_flag = EAI_communist_focus
+
+		if = { limit = { has_country_flag = EAI_diplomacy_event_logging } log = "[GetYear] [GetMonth] | AI | [Root.GetName] | IDEOLOGY FOCUS: communist" } 
+	}
+
+	option = { name = "fascist"
+		trigger = { 
+			OR = {
+				has_available_idea_with_traits = { idea = fascist_demagogue limit = 1 } 
+				has_idea_with_trait = fascist_demagogue
+			}
+		}
+
+		ai_chance = {
+			base = 1
+
+			modifier = { add = 1 EAI_fascist_nation = yes }
+			modifier = { add = 1 check_variable = { party_popularity@fascism > 0.8 } }
+			modifier = { add = 1 check_variable = { party_popularity@fascism > 0.6 } }
+			modifier = { add = 1 check_variable = { party_popularity@fascism > 0.4 } }
+			modifier = { add = 1 check_variable = { party_popularity@fascism > 0.2 } }
+		}
+
+		set_country_flag = EAI_fascist_focus
+
+		if = { limit = { has_country_flag = EAI_diplomacy_event_logging } log = "[GetYear] [GetMonth] | AI | [Root.GetName] | IDEOLOGY FOCUS: fascist" } 
+	}
+
+	option = { name = "neutral"
+		ai_chance = {
+			base = 1
+
+			modifier = { add = 3 EAI_nonaligned_nation = yes }
+		}
+
+		set_country_flag = EAI_neutral_focus
+
+		if = { limit = { has_country_flag = EAI_diplomacy_event_logging } log = "[GetYear] [GetMonth] | AI | [Root.GetName] | IDEOLOGY FOCUS: neutral" } 
+	}
+}
+
+# allows a neutral country to pick up an ideology
+country_event = {
+	id = EAI_DM.1231
+	hidden = yes
+
+	mean_time_to_happen = { days = 365 }
+
+	trigger = {
+		is_ai = yes
+		has_global_flag = EAI_random_ideology
+		has_focus_tree = generic_focus
+		has_country_flag = EAI_neutral_focus
+
+		OR = {
+			check_variable = { party_popularity@democratic > 0.5 }
+			check_variable = { party_popularity@fascism > 0.5 }
+			check_variable = { party_popularity@communism > 0.5 }
+		}
+	}
+
+	immediate = {
+		clr_country_flag = EAI_neutral_focus
+
+		if = { limit = { check_variable = { party_popularity@democratic > 0.5 } } 
+			set_country_flag = EAI_democratic_focus
+		}
+		if = { limit = { check_variable = { party_popularity@communism > 0.5 } } 
+			set_country_flag = EAI_communist_focus
+		}
+		if = { limit = { check_variable = { party_popularity@fascism > 0.5 } } 
+			set_country_flag = EAI_fascist_focus
+		}
+
+		if = { limit = { has_country_flag = EAI_diplomacy_event_logging } log = "[GetYear] [GetMonth] | AI | [Root.GetName] | IDEOLOGY FOCUS: neutral" } 
+	}
+
+	option = {}
+}
+
+#######################################################
+# operations
+#######################################################

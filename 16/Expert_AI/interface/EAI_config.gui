@@ -1,0 +1,71 @@
+guiTypes = {
+	containerWindowType = {
+		name = "EAI_open_config"
+		position = {x=-422 y=3}
+		Orientation = upper_RIGHT
+
+		buttonType = {
+			name = "EAI_open_config_button"
+			position = {x=0 y=0}
+			shortcut = "ctrl+shift+o"
+			spriteType = "GFX_EAI_config_button"
+			pdx_tooltip = "EAI_open_config_button.tt"
+		}
+	}
+
+	containerWindowType = {
+		name = "EAI_open_country_config"
+		position = {x=-422 y=3}
+		Orientation = upper_RIGHT
+
+		buttonType = {
+			name = "EAI_open_country_config_button"
+			position = {x=0 y=0}
+			shortcut = "ctrl+shift+o"
+			spriteType = "GFX_EAI_country_config_button"
+			pdx_tooltip = "EAI_open_country_config_button.tt"
+			pdx_tooltip_delayed = "EAI_open_country_config_button.tt_delayed"
+		}
+	}
+
+	containerWindowType = {
+		name = "EAI_startup_message"
+		position = {x=-750 y=-300}
+		size = { width=510 height=900 }
+		Orientation = center
+		moveable = yes
+
+		background = {
+			name = "Background"
+			position = {x=0 y=0}
+			spriteType = "GFX_EAI_startup_message_bg"
+		}
+
+		instantTextboxType = {
+			name = "EAI_startup_message_text"
+			position = {x=9 y=10}
+			# font = "hoi_30header"
+			text = "EAI_startup_message_text"
+			maxWidth = 490
+			maxHeight = 2
+			format = left
+		}
+
+		buttonType = {
+			position = {x=200 y=600}
+			name = "EAI_startup_message_button"
+			spriteType = "GFX_EAI_custom_bonus_button_2"
+			scale = 1.5
+		}
+		instantTextboxType = {
+			name = "EAI_startup_message_button_text"
+			position = {x=220 y=605}
+			# font = "EAI_Arial12"
+			text = "Got it!"
+			maxWidth = 60
+			maxHeight = 23
+			format = center
+			alwaystransparent = yes
+		}
+	}
+}

@@ -1,0 +1,72 @@
+﻿add_namespace = EAI_C
+
+############################################################################################################
+# Expert AI mod - scriptable construction logic for the AI
+############################################################################################################
+
+# set resource variables (done here due to script issues)
+country_event = { 
+	id = EAI_C.10002
+	hidden = yes
+	is_triggered_only = yes
+	immediate = {
+		every_state = { EAI_set_resource_variables = yes }
+	}
+
+	option = {}
+}
+
+############################################################################################################
+
+add_namespace = EAI_PC_event
+
+country_event = { 
+	id = EAI_PC_event.10
+	hidden = yes
+	is_triggered_only = yes
+	immediate = { 
+		subtract_from_variable = { EAI_PC_active_projects = 1 } 
+		set_variable = { EAI_PC_project_array^0 = 0 }
+	}
+	option = {}
+}
+country_event = { 
+	id = EAI_PC_event.11
+	hidden = yes
+	is_triggered_only = yes
+	immediate = { 
+		subtract_from_variable = { EAI_PC_active_projects = 1 } 
+		set_variable = { EAI_PC_project_array^1 = 0 }
+	}
+	option = {}
+}
+country_event = { 
+	id = EAI_PC_event.12
+	hidden = yes
+	is_triggered_only = yes
+	immediate = { 
+		subtract_from_variable = { EAI_PC_active_projects = 1 } 
+		set_variable = { EAI_PC_project_array^2 = 0 }
+	}
+	option = {}
+}
+country_event = { 
+	id = EAI_PC_event.13
+	hidden = yes
+	is_triggered_only = yes
+	immediate = { 
+		subtract_from_variable = { EAI_PC_active_projects = 1 } 
+		set_variable = { EAI_PC_project_array^3 = 0 }
+	}
+	option = {}
+}
+country_event = { 
+	id = EAI_PC_event.14
+	hidden = yes
+	is_triggered_only = yes
+	immediate = { 
+		subtract_from_variable = { EAI_PC_active_projects = 1 } 
+		set_variable = { EAI_PC_project_array^4 = 0 }
+	}
+	option = {}
+}

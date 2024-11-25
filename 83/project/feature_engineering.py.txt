@@ -1,0 +1,21 @@
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+def create_features(data):
+    """Создание новых признаков"""
+    data['Tenure_Salary_Ratio'] = data['Tenure'] / data['EstimatedSalary']
+    return data
+
+def scale_features(data):
+    """Масштабирование признаков"""
+    scaler = StandardScaler()
+    features = data.drop('Exited', axis=1)
+    scaled_features = scaler.fit_transform(features)
+    return pd.DataFrame(scaled_features, columns=features.columns)
+
+if __name__ == "__main__":
+    data = pd.read_csv('data/clean_train.csv')
+    data = create_features(data)
+    scaled_data = scale_features(data)
+    scaled_data['Exited'] = data['Exited']
+    scaled_data.to_csv('data/scaled_train.csv', index=False)

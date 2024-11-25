@@ -1,0 +1,18 @@
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+
+def load_model(filepath):
+    """Загрузка модели"""
+    # Загрузка модели осуществляется через библиотеку joblib или pickle
+    pass
+
+def predict(model, new_data):
+    """Предсказание оттока клиентов"""
+    return model.predict(new_data)
+
+if __name__ == "__main__":
+    # Предполагается, что модель была загружена
+    model = load_model('model.pkl')  
+    new_data = pd.read_csv('data/new_data.csv')
+    predictions = predict(model, new_data)
+    print(predictions)

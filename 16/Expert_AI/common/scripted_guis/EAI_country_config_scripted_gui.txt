@@ -1,0 +1,618 @@
+scripted_gui = {
+
+	#######################################################
+	#	COUNTRY SETTINGS
+	#######################################################
+	
+	EAI_config_COUNTRY = {
+		context_type = player_context
+
+		window_name = "EAI_config_COUNTRY_window"
+
+		dirty = ROOT.EAI_refresh_gui
+		
+		visible = {
+			has_variable = EAI_configuration_target
+			
+			has_country_flag = EAI_config_COUNTRY
+		}
+
+		properties = {
+
+			EAI_config_COUNTRY_3_button = {
+				image = "[EAI_GetCountryReinforcementsSetting]"
+			}
+		}
+		
+		effects = {
+
+			EAI_config_COUNTRY_custom_bonus_button_click = {
+				if = { limit = { NOT = { has_country_flag = EAI_config_CUSTOM_BONUS } } 
+				
+					EAI_DIFFICULTY_get_custom_bonus_settings = yes
+					set_country_flag = EAI_config_CUSTOM_BONUS 
+				}
+				else = { 
+					clr_country_flag = EAI_config_CUSTOM_BONUS 
+					EAI_DIFFICULTY_set_custom_bonus_settings = yes
+				}
+
+				EAI_refresh_gui = yes
+			}
+
+			EAI_config_COUNTRY_3_button_click = {
+
+				var:EAI_configuration_target = { 
+
+					if = { limit = { has_country_flag = EAI_reinforcements_mode }
+
+						clr_country_flag = EAI_reinforcements_mode
+					}
+					else = {
+						set_country_flag = EAI_reinforcements_mode
+					}
+				}
+
+				if = { limit = { has_country_flag = EAI_config_COUNTRY_GLOBAL }
+
+					for_each_scope_loop = { array = EAI_config_country_list_selected_country_array
+
+						if = { limit = { var:ROOT.EAI_configuration_target = { has_country_flag = EAI_reinforcements_mode } }
+							set_country_flag = EAI_reinforcements_mode
+						}
+						else = {
+							clr_country_flag = EAI_reinforcements_mode
+						}
+					}
+				}
+
+				EAI_refresh_gui = yes
+			}
+
+			EAI_config_COUNTRY_global_mode_button_click = {
+
+				clear_array = EAI_config_country_list_selected_country_array
+				
+				if = { limit = { NOT = { has_country_flag = EAI_config_COUNTRY_GLOBAL } }
+
+					set_country_flag = EAI_config_COUNTRY_GLOBAL
+				}
+				else = {
+					clr_country_flag = EAI_config_COUNTRY_GLOBAL
+				}
+
+				EAI_refresh_gui = yes
+			}
+
+			###########################################
+		
+			# MILITARY CONFIG
+			EAI_config_COUNTRY_army_config_button_click = {
+				
+				clr_country_flag = EAI_config_COUNTRY
+
+				if = { limit = { NOT = { has_country_flag = EAI_config_COUNTRY_GLOBAL } }
+					EAI_DIFFICULTY_set_custom_bonus_settings = yes
+				}
+				else = {
+					set_temp_variable = { config_target = EAI_configuration_target }
+
+					for_each_scope_loop = { array = EAI_config_country_list_selected_country_array
+
+						set_variable = { ROOT.EAI_configuration_target = THIS.id }
+						EAI_DIFFICULTY_set_custom_bonus_settings = yes
+					}
+
+					set_variable = { EAI_configuration_target = config_target }
+				}
+
+				EAI_DIFFICULTY_clear_custom_bonus_settings = yes
+
+				clr_country_flag = EAI_config_CUSTOM_BONUS 
+
+				clr_country_flag = EAI_config_COUNTRY_GLOBAL
+
+				set_country_flag = EAI_config_ARMY
+
+				EAI_refresh_gui = yes
+			}
+			
+			# EXIT
+			EAI_config_COUNTRY_exit_click = {
+
+				clr_country_flag = EAI_config_COUNTRY
+			
+				clr_country_flag = EAI_config_ARMY
+
+				if = { limit = { NOT = { has_country_flag = EAI_config_COUNTRY_GLOBAL } }
+					EAI_DIFFICULTY_set_custom_bonus_settings = yes
+				}
+				else = {
+					set_temp_variable = { config_target = EAI_configuration_target }
+
+					for_each_scope_loop = { array = EAI_config_country_list_selected_country_array
+
+						set_variable = { ROOT.EAI_configuration_target = THIS.id }
+						EAI_DIFFICULTY_set_custom_bonus_settings = yes
+					}
+
+					set_variable = { EAI_configuration_target = config_target }
+				}
+
+				EAI_DIFFICULTY_clear_custom_bonus_settings = yes
+
+				clr_country_flag = EAI_config_CUSTOM_BONUS 
+
+				clr_country_flag = EAI_config_COUNTRY_GLOBAL
+				
+				var:EAI_configuration_target = {		
+					clr_country_flag = EAI_player_is_configuring_this_country
+
+					clr_country_flag = EAI_player_is_configuring_this_country_@ROOT
+				}
+
+				clear_variable = EAI_configuration_target
+				
+				country_event = EAI.1000 # forces the decision visible triggers to refresh
+
+				EAI_refresh_gui = yes
+			}
+		}
+	}
+
+	###################################### BONUS
+
+	EAI_config_COUNTRY_1a = {
+		context_type = player_context
+		window_name = "EAI_config_COUNTRY_1a_window"
+		parent_window_name = "EAI_config_COUNTRY_window"
+
+		dirty = ROOT.EAI_refresh_gui
+
+		properties = {
+
+			EAI_config_COUNTRY_1a_button = {
+				image = "[EAI_GetCOUNTRY1aSetting]"
+			}
+		}
+
+		effects = {
+
+			EAI_config_COUNTRY_1a_button_click = {
+
+				var:EAI_configuration_target = {
+
+					clear_variable = EAI_difficulty_bonus
+
+					EAI_DIFFICULTY_clear_active_difficulty_bonus = yes
+
+					if = { limit = { has_country_flag = EAI_disable_dynamic_difficulty_bonus }
+
+						clr_country_flag = EAI_disable_dynamic_difficulty_bonus
+					}
+					else_if = { limit = { has_variable = global.EAI_dynamic_difficulty_bonus }
+
+						set_country_flag = EAI_disable_dynamic_difficulty_bonus
+					}
+				}
+
+				EAI_DIFFICULTY_get_custom_bonus_settings = yes
+
+				if = { limit = { has_country_flag = EAI_config_COUNTRY_GLOBAL }
+
+					set_temp_variable = { config_target = EAI_configuration_target }
+
+					for_each_scope_loop = { array = EAI_config_country_list_selected_country_array
+
+						set_variable = { ROOT.EAI_configuration_target = THIS.id }
+
+						var:EAI_configuration_target = {
+
+							clear_variable = EAI_difficulty_bonus
+
+							EAI_DIFFICULTY_clear_active_difficulty_bonus = yes
+
+							if = { limit = { var:config_target = { NOT = { tag = PREV } } }
+
+								if = { limit = { var:config_target = { has_country_flag = EAI_disable_dynamic_difficulty_bonus } }
+									set_country_flag = EAI_disable_dynamic_difficulty_bonus
+								}
+								else = {
+									clr_country_flag = EAI_disable_dynamic_difficulty_bonus
+								}
+							}
+						}
+
+						EAI_DIFFICULTY_get_custom_bonus_settings = yes
+					}
+
+					set_variable = { EAI_configuration_target = config_target }
+				}
+
+				EAI_refresh_gui = yes
+			}
+		}
+	}
+	EAI_config_COUNTRY_1b = {
+		context_type = player_context
+		window_name = "EAI_config_COUNTRY_1b_window"
+		parent_window_name = "EAI_config_COUNTRY_window"
+
+		dirty = ROOT.EAI_refresh_gui
+
+		properties = {
+
+			EAI_config_COUNTRY_1b_button = {
+				image = "[EAI_GetCOUNTRY1bSetting]"
+			}
+		}
+
+		effects = {
+
+			EAI_config_COUNTRY_1b_button_click = {
+
+				var:EAI_configuration_target = {		
+
+					clr_country_flag = EAI_disable_dynamic_difficulty_bonus
+				
+					set_variable = { EAI_difficulty_bonus = 1 }
+					
+					EAI_DIFFICULTY_clear_active_difficulty_bonus = yes
+					
+					EAI_DIFFICULTY_set_hard_difficulty_custom_modifiers = yes
+
+					country_event = EAI_H.0
+				}
+
+				EAI_DIFFICULTY_get_custom_bonus_settings = yes
+
+				if = { limit = { has_country_flag = EAI_config_COUNTRY_GLOBAL }
+
+					set_temp_variable = { config_target = EAI_configuration_target }
+
+					for_each_scope_loop = { array = EAI_config_country_list_selected_country_array
+
+						set_variable = { ROOT.EAI_configuration_target = THIS.id }
+
+						var:EAI_configuration_target = {
+												
+							clr_country_flag = EAI_disable_dynamic_difficulty_bonus
+							
+							set_variable = { EAI_difficulty_bonus = 1 }
+							
+							EAI_DIFFICULTY_clear_active_difficulty_bonus = yes
+							
+							EAI_DIFFICULTY_set_hard_difficulty_custom_modifiers = yes
+
+							country_event = EAI_H.0
+						}
+
+						EAI_DIFFICULTY_get_custom_bonus_settings = yes
+					}
+
+					set_variable = { EAI_configuration_target = config_target }
+				}
+
+				EAI_refresh_gui = yes
+			}
+		}
+	}
+	EAI_config_COUNTRY_1c = {
+		context_type = player_context
+		window_name = "EAI_config_COUNTRY_1c_window"
+		parent_window_name = "EAI_config_COUNTRY_window"
+
+		dirty = ROOT.EAI_refresh_gui
+
+		properties = {
+
+			EAI_config_COUNTRY_1c_button = {
+				image = "[EAI_GetCOUNTRY1cSetting]"
+			}
+		}
+
+		effects = {
+
+			EAI_config_COUNTRY_1c_button_click = {
+
+				var:EAI_configuration_target = {	
+
+					clr_country_flag = EAI_disable_dynamic_difficulty_bonus
+					
+					set_variable = { EAI_difficulty_bonus = 2 }
+					
+					EAI_DIFFICULTY_clear_active_difficulty_bonus = yes
+					
+					EAI_DIFFICULTY_set_very_hard_difficulty_custom_modifiers = yes
+
+					country_event = EAI_H.0
+				}
+
+				EAI_DIFFICULTY_get_custom_bonus_settings = yes
+
+				if = { limit = { has_country_flag = EAI_config_COUNTRY_GLOBAL }
+
+					set_temp_variable = { config_target = EAI_configuration_target }
+
+					for_each_scope_loop = { array = EAI_config_country_list_selected_country_array
+
+						set_variable = { ROOT.EAI_configuration_target = THIS.id }
+
+						var:EAI_configuration_target = {
+
+							clr_country_flag = EAI_disable_dynamic_difficulty_bonus
+							
+							set_variable = { EAI_difficulty_bonus = 2 }
+							
+							EAI_DIFFICULTY_clear_active_difficulty_bonus = yes
+							
+							EAI_DIFFICULTY_set_very_hard_difficulty_custom_modifiers = yes
+
+							country_event = EAI_H.0
+						}
+
+						EAI_DIFFICULTY_get_custom_bonus_settings = yes
+					}
+
+					set_variable = { EAI_configuration_target = config_target }
+				}
+
+				EAI_refresh_gui = yes
+			}
+		}
+	}
+	EAI_config_COUNTRY_1d = {
+		context_type = player_context
+		window_name = "EAI_config_COUNTRY_1d_window"
+		parent_window_name = "EAI_config_COUNTRY_window"
+
+		dirty = ROOT.EAI_refresh_gui
+
+		properties = {
+
+			EAI_config_COUNTRY_1d_button = {
+				image = "[EAI_GetCOUNTRY1dSetting]"
+			}
+		}
+
+		effects = {
+
+			EAI_config_COUNTRY_1d_button_click = {
+
+				var:EAI_configuration_target = {		
+
+					clr_country_flag = EAI_disable_dynamic_difficulty_bonus
+					
+					set_variable = { EAI_difficulty_bonus = 3 }
+					
+					EAI_DIFFICULTY_clear_active_difficulty_bonus = yes
+					
+					EAI_DIFFICULTY_set_insane_difficulty_custom_modifiers = yes
+
+					country_event = EAI_H.0
+				}
+
+				EAI_DIFFICULTY_get_custom_bonus_settings = yes
+
+				if = { limit = { has_country_flag = EAI_config_COUNTRY_GLOBAL }
+
+					set_temp_variable = { config_target = EAI_configuration_target }
+
+					for_each_scope_loop = { array = EAI_config_country_list_selected_country_array
+
+						set_variable = { ROOT.EAI_configuration_target = THIS.id }
+
+						var:EAI_configuration_target = {
+
+							clr_country_flag = EAI_disable_dynamic_difficulty_bonus
+							
+							set_variable = { EAI_difficulty_bonus = 3 }
+							
+							EAI_DIFFICULTY_clear_active_difficulty_bonus = yes
+							
+							EAI_DIFFICULTY_set_insane_difficulty_custom_modifiers = yes
+
+							country_event = EAI_H.0
+						}
+
+						EAI_DIFFICULTY_get_custom_bonus_settings = yes
+					}
+
+					set_variable = { EAI_configuration_target = config_target }
+				}
+
+				EAI_refresh_gui = yes
+			}
+		}
+	}
+
+	###################################### DESPERATE DEFENSE
+
+	EAI_config_COUNTRY_2a = {
+		context_type = player_context
+		window_name = "EAI_config_COUNTRY_2a_window"
+		parent_window_name = "EAI_config_COUNTRY_window"
+
+		dirty = ROOT.EAI_refresh_gui
+
+		properties = {
+
+			EAI_config_COUNTRY_2a_button = {
+				image = "[EAI_GetCOUNTRY2aSetting]"
+			}
+		}
+
+		effects = {
+
+			EAI_config_COUNTRY_2a_button_click = {
+
+				var:EAI_configuration_target = { 
+
+					clear_variable = EAI_desperate_defense
+				
+					EAI_DIFFICULTY_clear_active_desperate_defense = yes
+
+					if = { limit = { has_country_flag = EAI_disable_dynamic_desperate_defense }
+
+						clr_country_flag = EAI_disable_dynamic_desperate_defense
+					}
+					else_if = { limit = { has_variable = global.EAI_dynamic_desperate_defense }
+
+						set_country_flag = EAI_disable_dynamic_desperate_defense
+					}
+				}
+
+				if = { limit = { has_country_flag = EAI_config_COUNTRY_GLOBAL }
+
+					for_each_scope_loop = { array = EAI_config_country_list_selected_country_array
+
+						clear_variable = EAI_desperate_defense
+					
+						EAI_DIFFICULTY_clear_active_desperate_defense = yes
+
+						if = { limit = { var:ROOT.EAI_configuration_target = { NOT = { tag = PREV } } }
+
+							if = { limit = { var:ROOT.EAI_configuration_target = { has_country_flag = EAI_disable_dynamic_desperate_defense } }
+								set_country_flag = EAI_disable_dynamic_desperate_defense
+							}
+							else = {
+								clr_country_flag = EAI_disable_dynamic_desperate_defense
+							}
+						}
+					}
+				}
+
+				EAI_refresh_gui = yes
+			}
+		}
+	}
+	EAI_config_COUNTRY_2b = {
+		context_type = player_context
+		window_name = "EAI_config_COUNTRY_2b_window"
+		parent_window_name = "EAI_config_COUNTRY_window"
+
+		dirty = ROOT.EAI_refresh_gui
+
+		properties = {
+
+			EAI_config_COUNTRY_2b_button = {
+				image = "[EAI_GetCOUNTRY2bSetting]"
+			}
+		}
+
+		effects = {
+
+			EAI_config_COUNTRY_2b_button_click = {
+
+				var:EAI_configuration_target = {
+
+					clr_country_flag = EAI_disable_dynamic_desperate_defense
+
+					set_variable = { EAI_desperate_defense = 1 }
+				
+					EAI_DIFFICULTY_clear_active_desperate_defense = yes 
+				}
+
+				if = { limit = { has_country_flag = EAI_config_COUNTRY_GLOBAL }
+
+					for_each_scope_loop = { array = EAI_config_country_list_selected_country_array
+
+						clr_country_flag = EAI_disable_dynamic_desperate_defense
+					
+						set_variable = { EAI_desperate_defense = 1 }
+					
+						EAI_DIFFICULTY_clear_active_desperate_defense = yes 
+					}
+				}
+
+				EAI_refresh_gui = yes
+			}
+		}
+	}
+	EAI_config_COUNTRY_2c = {
+		context_type = player_context
+		window_name = "EAI_config_COUNTRY_2c_window"
+		parent_window_name = "EAI_config_COUNTRY_window"
+
+		dirty = ROOT.EAI_refresh_gui
+
+		properties = {
+
+			EAI_config_COUNTRY_2c_button = {
+				image = "[EAI_GetCOUNTRY2cSetting]"
+			}
+		}
+
+		effects = {
+
+			EAI_config_COUNTRY_2c_button_click = {
+
+				var:EAI_configuration_target = {
+
+					clr_country_flag = EAI_disable_dynamic_desperate_defense
+					
+					set_variable = { EAI_desperate_defense = 2 }
+
+					EAI_DIFFICULTY_clear_active_desperate_defense = yes
+				}
+
+				if = { limit = { has_country_flag = EAI_config_COUNTRY_GLOBAL }
+
+					for_each_scope_loop = { array = EAI_config_country_list_selected_country_array
+
+						clr_country_flag = EAI_disable_dynamic_desperate_defense
+					
+						set_variable = { EAI_desperate_defense = 2 }
+
+						EAI_DIFFICULTY_clear_active_desperate_defense = yes
+					}
+				}
+
+				EAI_refresh_gui = yes
+			}
+		}
+	}
+	EAI_config_COUNTRY_2d = {
+		context_type = player_context
+		window_name = "EAI_config_COUNTRY_2d_window"
+		parent_window_name = "EAI_config_COUNTRY_window"
+
+		dirty = ROOT.EAI_refresh_gui
+
+		properties = {
+
+			EAI_config_COUNTRY_2d_button = {
+				image = "[EAI_GetCOUNTRY2dSetting]"
+			}
+		}
+
+		effects = {
+
+			EAI_config_COUNTRY_2d_button_click = {
+
+				var:EAI_configuration_target = {
+
+					clr_country_flag = EAI_disable_dynamic_desperate_defense
+					
+					set_variable = { EAI_desperate_defense = 3 }
+
+					EAI_DIFFICULTY_clear_active_desperate_defense = yes
+				}
+
+				if = { limit = { has_country_flag = EAI_config_COUNTRY_GLOBAL }
+
+					for_each_scope_loop = { array = EAI_config_country_list_selected_country_array
+
+						clr_country_flag = EAI_disable_dynamic_desperate_defense
+					
+						set_variable = { EAI_desperate_defense = 3 }
+
+						EAI_DIFFICULTY_clear_active_desperate_defense = yes
+					}
+				}
+
+				EAI_refresh_gui = yes
+			}
+		}
+	}
+}

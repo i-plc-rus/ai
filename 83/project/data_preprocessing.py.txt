@@ -1,0 +1,27 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+
+def load_data(filepath):
+    """Загрузка данных из CSV файла"""
+    return pd.read_csv(filepath)
+
+def preprocess_data(data):
+    """Предобработка данных"""
+    # Заполнение пропусков
+    data.fillna(method='ffill', inplace=True)
+    
+    # Удаление строк с аномальными значениями
+    data = data[data['Balance'] >= 0]
+
+    # Группировка по определённым признакам, если необходимо
+    # data = data.groupby('Feature').agg('mean').reset_index() 
+
+    # Преобразование категориальных переменных
+    data = pd.get_dummies(data, columns=['Gender'], drop_first=True)
+
+    return data
+
+if __name__ == "__main__":
+    data = load_data('data/train.csv')
+    clean_data = preprocess_data(data)
+    clean_data.to_csv('data/clean_train.csv', index=False)

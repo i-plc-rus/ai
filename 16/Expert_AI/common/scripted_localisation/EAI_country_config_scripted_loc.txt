@@ -1,0 +1,213 @@
+############################################################################################################
+#	Expert AI mod - scripted localisation
+############################################################################################################
+
+############ country settings ############
+
+### bonus
+
+defined_text = {
+	name = EAI_GetCOUNTRY1aSetting
+
+	text = {
+		trigger = { 
+			OR = {
+				AND = {
+					NOT = { has_variable = global.EAI_dynamic_difficulty_bonus }
+					var:EAI_configuration_target = { NOT = { has_variable = EAI_difficulty_bonus } }
+				}
+			
+				AND = {
+					has_variable = global.EAI_dynamic_difficulty_bonus
+					var:EAI_configuration_target = { NOT = { has_variable = EAI_difficulty_bonus } has_country_flag = EAI_disable_dynamic_difficulty_bonus } 
+				}
+			}
+		}
+		localization_key = "GFX_EAI_button_0_on"
+	}
+	text = {
+		localization_key = "GFX_EAI_button_0"
+	}
+}
+defined_text = {
+	name = EAI_GetCOUNTRY1bSetting
+
+	text = {
+		trigger = { var:EAI_configuration_target = { check_variable = { EAI_difficulty_bonus = 1 } } }
+		localization_key = "GFX_EAI_button_2_on"
+	}
+	text = {
+		localization_key = "GFX_EAI_button_2"
+	}
+}
+defined_text = {
+	name = EAI_GetCOUNTRY1cSetting
+
+	text = {
+		trigger = { var:EAI_configuration_target = { check_variable = { EAI_difficulty_bonus = 2 } } }
+		localization_key = "GFX_EAI_button_3_on"
+	}
+	text = {
+		localization_key = "GFX_EAI_button_3"
+	}
+}
+defined_text = {
+	name = EAI_GetCOUNTRY1dSetting
+
+	text = {
+		trigger = { var:EAI_configuration_target = { check_variable = { EAI_difficulty_bonus = 3 } } }
+		localization_key = "GFX_EAI_button_4_on"
+	}
+	text = {
+		localization_key = "GFX_EAI_button_4"
+	}
+}
+
+### desperate defense
+
+defined_text = {
+	name = EAI_GetCOUNTRY2aSetting
+
+	text = {
+		trigger = { 
+			OR = {
+				AND = {
+					NOT = { has_variable = global.EAI_dynamic_desperate_defense }
+					var:EAI_configuration_target = { NOT = { has_variable = EAI_desperate_defense } }
+				}
+			
+				AND = {
+					has_variable = global.EAI_dynamic_desperate_defense
+					var:EAI_configuration_target = { NOT = { has_variable = EAI_desperate_defense } has_country_flag = EAI_disable_dynamic_desperate_defense } 
+				}
+			}
+		}
+		localization_key = "GFX_EAI_button_0_on"
+	}
+	text = {
+		localization_key = "GFX_EAI_button_0"
+	}
+}
+defined_text = {
+	name = EAI_GetCOUNTRY2bSetting
+
+	text = {
+		trigger = { var:EAI_configuration_target = { check_variable = { EAI_desperate_defense = 1 } } }
+		localization_key = "GFX_EAI_button_2_on"
+	}
+	text = {
+		localization_key = "GFX_EAI_button_2"
+	}
+}
+defined_text = {
+	name = EAI_GetCOUNTRY2cSetting
+
+	text = {
+		trigger = { var:EAI_configuration_target = { check_variable = { EAI_desperate_defense = 2 } } }
+		localization_key = "GFX_EAI_button_3_on"
+	}
+	text = {
+		localization_key = "GFX_EAI_button_3"
+	}
+}
+defined_text = {
+	name = EAI_GetCOUNTRY2dSetting
+
+	text = {
+		trigger = { var:EAI_configuration_target = { check_variable = { EAI_desperate_defense = 3 } } }
+		localization_key = "GFX_EAI_button_4_on"
+	}
+	text = {
+		localization_key = "GFX_EAI_button_4"
+	}
+}
+
+### reinforcement
+
+defined_text = {
+	name = EAI_GetCountryReinforcementsSetting
+
+	text = {
+		trigger = { 
+			var:EAI_configuration_target = { 
+				OR = {
+					has_country_flag = EAI_reinforcements_mode
+
+					AND = {
+						NOT = { has_country_flag = EAI_reinforcements_mode has_country_flag = EAI_disable_dynamic_reinforcements_mode }
+
+						has_global_flag = EAI_dynamic_reinforcements_mode
+					}
+				}
+			}
+		}
+		localization_key = "GFX_EAI_checkbox_on"
+	}
+	text = {
+		trigger = { 
+			var:EAI_configuration_target = { 
+				OR = {
+					NOT = { 
+						has_country_flag = EAI_reinforcements_mode 
+
+						has_global_flag = EAI_dynamic_reinforcements_mode
+					}
+
+					has_country_flag = EAI_disable_dynamic_reinforcements_mode
+				}
+			}
+		}
+		localization_key = "GFX_EAI_checkbox_off"
+	}
+}
+defined_text = {
+	name = EAI_GetReinforcements
+
+	text = {
+		trigger = { check_variable = { Root.EAI_dd_unit_count > 0 } }
+		localization_key = EAI_divisions_received
+	}
+	text = {
+		trigger = { NOT = { check_variable = { Root.EAI_dd_unit_count > 0 } } }
+		localization_key = ""
+	}
+}
+
+### planning/entrenchment
+
+defined_text = {
+	name = EAI_GetCountryPlanningEntrenchmentSetting
+
+	text = {
+		trigger = { 
+			var:EAI_configuration_target = { 
+				OR = {
+					has_country_flag = EAI_boost_planning
+
+					AND = {
+						NOT = { has_country_flag = EAI_boost_planning has_country_flag = EAI_disable_boost_planning }
+
+						has_global_flag = EAI_dynamic_boost_planning
+					}
+				}
+			}
+		}
+		localization_key = "GFX_EAI_checkbox_on"
+	}
+	text = {
+		trigger = { 
+			var:EAI_configuration_target = { 
+				OR = {
+					NOT = { 
+						has_country_flag = EAI_boost_planning 
+
+						has_global_flag = EAI_dynamic_boost_planning
+					}
+
+					has_country_flag = EAI_disable_boost_planning
+				}
+			}
+		}
+		localization_key = "GFX_EAI_checkbox_off"
+	}
+}

@@ -1,0 +1,79 @@
+############################################################################################################
+#	Expert AI mod - naval designs
+############################################################################################################
+
+EAI_mine_layer_early = {
+	category = naval
+	roles = { naval_mine_layer }
+	priority = {
+		base = 0
+	}
+	EARLY_MINE_LAYER_1 = { # to make task force reinforcement work
+		role_icon_index = 4
+		priority = {
+			base = 0
+		}
+
+		target_variant = {
+			type = ship_hull_light_1
+			match_value = 1000
+		}
+	}
+}
+
+EAI_mine_layer = {
+	category = naval
+	roles = { naval_mine_layer }
+	priority = { # Priority of design among all roles (1-10)
+		base = 0
+		modifier = { add = 1 check_variable = { EAI_FOCUS/NAVY/mine_layer = global.EAI_ON } }
+	}
+
+	##############################################################################
+	### 	EARLY
+	##############################################################################
+
+	EARLY_MINE_LAYER_DESTROYER = {
+		role_icon_index = 4
+		priority = {
+			base = 0
+			modifier = { 
+				add = 10000
+
+				### Requirements
+				has_tech = early_ship_hull_light
+				has_tech = basic_naval_mines
+			}
+		}
+
+		target_variant = {
+			type = ship_hull_light_1
+			match_value = 1
+
+			modules = {
+
+				# ELECTRONICS
+				fixed_ship_fire_control_system_slot = empty
+				fixed_ship_radar_slot = empty
+
+				# ENGINE
+				fixed_ship_engine_slot = { module = light_ship_engine_1 upgrade = current }
+
+				# ANTI-AIR
+				fixed_ship_anti_air_slot = empty
+
+				# MAIN
+				fixed_ship_battery_slot = { module = ship_light_battery_1 upgrade = current }
+				fixed_ship_torpedo_slot = empty
+
+				# CUSTOM
+				mid_1_custom_slot = { module = ship_mine_layer_1 upgrade = current }
+				rear_1_custom_slot = { module = ship_mine_layer_1 upgrade = current }
+			}
+		}
+
+		requirements = {
+			module = ship_mine_layer
+		}
+	}
+}

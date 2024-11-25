@@ -1,0 +1,17 @@
+CHI_dont_mess_with_the_soviets = {
+
+	allowed = { original_tag = CHI }
+	enable = {	
+		NOT = { has_war_with = SOV }
+	}
+	
+	abort = {
+		has_war_with = SOV
+	}
+
+	ai_strategy = {
+		type = contain
+		id = "SOV"			
+		value = -200
+	}
+}

@@ -1,0 +1,522 @@
+# befriend
+# conquer
+# antagonize
+# build_ship
+# build_army
+# unit_ratio
+# build_building
+# research_tech
+# garrison
+# protect
+# influence
+
+JAP_stock_up_on_trains_before_china = {
+	allowed = {
+		original_tag = JAP
+	}
+
+	enable = {
+		has_war = no
+	}
+	abort_when_not_enabled = yes
+
+	ai_strategy = {
+		type = min_wanted_supply_trains
+		value = 100
+	}
+}
+
+southern_expansion = {
+	allowed = {
+		original_tag = JAP
+	}
+	enable = {
+		has_completed_focus = JAP_strike_south_doctrine
+		OR = {
+			country_exists = HOL
+			country_exists = ENG
+		}
+	}
+	abort = {
+		NOT = {
+			country_exists = HOL
+			country_exists = ENG
+		}
+	}
+
+	ai_strategy = {
+		type = antagonize
+		id = "HOL"
+		value = 200
+	}
+	ai_strategy = {
+		type = antagonize
+		id = "ENG"
+		value = 100
+	}
+}
+
+northern_expansion = {
+	allowed = {
+		original_tag = JAP
+	}
+	enable = {
+		has_completed_focus = JAP_prepare_for_war_with_the_soviet_union
+		country_exists = SOV
+	}
+	abort = {
+		NOT = {
+			country_exists = SOV
+		}
+	}
+
+	ai_strategy = {
+		type = antagonize
+		id = "SOV"
+		value = 200
+	}
+}
+
+chinese_war = {
+	allowed = {
+		original_tag = JAP
+	}
+	enable = {
+		has_completed_focus = JAP_intervene_in_china
+		country_exists = CHI
+	}
+	abort = {
+		NOT = {
+			country_exists = CHI
+		}
+	}
+
+	ai_strategy = {
+		type = antagonize
+		id = "CHI"
+		value = 200
+	}
+}
+
+strike_usa = {
+	allowed = {
+		original_tag = JAP
+	}
+	enable = {
+		has_completed_focus = JAP_secure_the_philippines
+		country_exists = USA
+	}
+	abort = {
+		NOT = {
+			country_exists = USA
+		}
+	}
+
+	ai_strategy = {
+		type = antagonize
+		id = "USA"
+		value = 200
+	}
+
+	ai_strategy = {
+		type = antagonize
+		id = "PHI"
+		value = 200
+	}
+}
+
+# "I can run wild for six months… after that, I have no expectation of success"
+jap_hush_yamamoto_its_gonna_be_ok = {
+	allowed = {
+		original_tag = JAP
+	}
+	enable = {
+		has_completed_focus = JAP_secure_the_philippines
+		has_war_with = USA
+	}
+
+	abort = {
+		OR = {
+			has_war_with = USA
+			NOT = {
+				country_exists = USA
+			}
+		}
+	}
+
+	ai_strategy = {
+		type = consider_weak
+		id = "USA"
+		value = 75
+	}
+}
+
+germany_ally = {
+	allowed = {
+		original_tag = JAP
+	}
+	enable = {
+		has_completed_focus = JAP_technological_exchange
+		country_exists = GER
+	}
+	abort = {
+		NOT = { country_exists = GER }
+	}
+
+	ai_strategy = {
+		type = befriend
+		id = "GER"
+		value = 200
+	}
+	ai_strategy = {
+		type = alliance
+		id = "GER"
+		value = 200
+	}
+}
+
+# hey dynamic targets would be swole as f*
+all_china_must_prosper_in_my_prosperity_sphere_SIK = {
+	allowed = {
+		original_tag = JAP
+	}
+	enable = {
+		is_historical_focus_on = no #EAI
+		OR = {
+			NOT = { country_exists = CHI }
+			CHI = {
+				is_in_faction_with = JAP
+				is_puppet_of = JAP
+			}
+		}
+		country_exists = SIK
+		NOT = {
+			SIK = {
+				OR = {
+					is_in_faction_with = JAP
+					is_puppet_of = JAP
+				}
+			}
+			AND = {
+				OR = {
+					AND = {
+						has_global_flag = SOV_soviet_japanese_reconciliation_flag
+						NOT = { has_war_with = SOU }
+					}
+					has_non_aggression_pact_with = SOU
+					is_in_faction_with = SOU
+				}
+				SIK = {
+					OR = {
+						is_in_faction_with = SOU
+						is_puppet_of = SOU
+					}
+				}
+			}
+		}
+	}
+
+	abort = {
+		OR = {
+			NOT = { country_exists = SIK }
+			SIK = {
+				OR = {
+					is_in_faction_with = JAP
+					is_puppet_of = JAP
+				}
+			}
+			AND = {
+				OR = {
+					AND = {
+						has_global_flag = SOV_soviet_japanese_reconciliation_flag
+						NOT = { has_war_with = SOU }
+					}
+					has_non_aggression_pact_with = SOU
+					is_in_faction_with = SOU
+				}
+				SIK = {
+					OR = {
+						is_in_faction_with = SOU
+						is_puppet_of = SOU
+					}
+				}
+			}
+		}
+	}
+
+	ai_strategy = {
+		type = antagonize
+		id = "SIK"
+		value = 5000
+	}
+}
+all_china_must_prosper_in_my_prosperity_sphere_XSM = {
+	allowed = {
+		original_tag = JAP
+	}
+	enable = {
+		OR = {
+			NOT = { country_exists = CHI }
+			CHI = {
+				is_in_faction_with = JAP
+				is_puppet_of = JAP
+			}
+		}
+		country_exists = XSM
+		NOT = {
+			XSM = {
+				OR = {
+					is_in_faction_with = JAP
+					is_puppet_of = JAP
+				}
+			}
+		}
+	}
+
+	abort = {
+		NOT = { country_exists = XSM }
+		XSM = {
+			OR = {
+				is_in_faction_with = JAP
+				is_puppet_of = JAP
+			}
+		}
+	}
+
+	ai_strategy = {
+		type = antagonize
+		id = "XSM"
+		value = 5000
+	}
+}
+all_china_must_prosper_in_my_prosperity_sphere_GXC = {
+	allowed = {
+		original_tag = JAP
+	}
+	enable = {
+		OR = {
+			NOT = { country_exists = CHI }
+			CHI = {
+				is_in_faction_with = JAP
+				is_puppet_of = JAP
+			}
+		}
+		country_exists = GXC
+		NOT = {
+			GXC = {
+				OR = {
+					is_in_faction_with = JAP
+					is_puppet_of = JAP
+				}
+			}
+		}
+	}
+
+	abort = {
+		NOT = { country_exists = GXC }
+		GXC = {
+			OR = {
+				is_in_faction_with = JAP
+				is_puppet_of = JAP
+			}
+		}
+	}
+
+	ai_strategy = {
+		type = antagonize
+		id = "GXC"
+		value = 5000
+	}
+}
+all_china_must_prosper_in_my_prosperity_sphere_SHX = {
+	allowed = {
+		original_tag = JAP
+	}
+	enable = {
+		OR = {
+			NOT = { country_exists = CHI }
+			CHI = {
+				is_in_faction_with = JAP
+				is_puppet_of = JAP
+			}
+		}
+		country_exists = SHX
+		NOT = {
+			SHX = {
+				OR = {
+					is_in_faction_with = JAP
+					is_puppet_of = JAP
+				}
+			}
+		}
+	}
+
+	abort = {
+		NOT = { country_exists = SHX }
+		SHX = {
+			OR = {
+				is_in_faction_with = JAP
+				is_puppet_of = JAP
+			}
+		}
+	}
+
+	ai_strategy = {
+		type = antagonize
+		id = "SHX"
+		value = 5000
+	}
+}
+all_china_must_prosper_in_my_prosperity_sphere_YUN = {
+	allowed = {
+		original_tag = JAP
+	}
+	enable = {
+		OR = {
+			NOT = { country_exists = CHI }
+			CHI = {
+				is_in_faction_with = JAP
+				is_puppet_of = JAP
+			}
+		}
+		country_exists = YUN
+		NOT = {
+			YUN = {
+				OR = {
+					is_in_faction_with = JAP
+					is_puppet_of = JAP
+				}
+			}
+		}
+	}
+
+	abort = {
+		NOT = { country_exists = YUN }
+		YUN = {
+			OR = {
+				is_in_faction_with = JAP
+				is_puppet_of = JAP
+			}
+		}
+	}
+
+	ai_strategy = {
+		type = antagonize
+		id = "YUN"
+		value = 5000
+	}
+
+}
+all_china_must_prosper_in_my_prosperity_sphere_PRC = {
+	allowed = {
+		original_tag = JAP
+	}
+	enable = {
+		OR = {
+			NOT = { country_exists = CHI }
+			CHI = {
+				is_in_faction_with = JAP
+				is_puppet_of = JAP
+			}
+		}
+		country_exists = PRC
+		NOT = {
+			PRC = {
+				OR = {
+					is_in_faction_with = JAP
+					is_puppet_of = JAP
+				}
+			}
+		}
+	}
+
+	abort = {
+		NOT = { country_exists = PRC }
+		PRC = {
+			OR = {
+				is_in_faction_with = JAP
+				is_puppet_of = JAP
+			}
+		}
+	}
+
+	ai_strategy = {
+		type = antagonize
+		id = "PRC"
+		value = 5000
+	}
+}
+
+jap_china_is_weak = {
+	allowed = {
+		original_tag = JAP
+	}
+
+	enable = {
+		date < 1939.10.1
+		NOT = { has_war_with = CHI } # only underestimate the japanese before the war
+	}
+
+	abort = {
+		OR = {
+			date > 1939.10.1
+			has_war_with = CHI # only underestimate the japanese before the war
+		}
+	}
+
+	ai_strategy = {
+		type = consider_weak
+		id = "CHI"
+		value = 50
+	}
+}
+
+# if china has fallen and we are going for USA we will end up at war with allies suddenly while maybe bordering them,
+# but thats hard to guess for AI considering all the steps. So we warn it so it can prep vs the allies
+jap_early_part_beware_allies = {
+	allowed = {
+		original_tag = JAP
+	}
+	enable = {
+		USA = { is_in_faction = no }
+		focus_progress = {
+			focus = JAP_secure_the_philippines
+			progress > 0
+		}
+		PHI = {	is_subject_of = USA }
+		NOT = { has_war_together_with = ENG }
+	}
+
+	abort = {
+		OR = {
+			USA = { is_in_faction = yes } # they know where to stand so we can go back to regular logic
+			has_war_together_with = ENG
+		}
+	}
+
+	ai_strategy = {
+		type = prepare_for_war
+		id = "ENG"
+		value = 100
+	}
+	ai_strategy = {
+		type = prepare_for_war
+		id = "FRA"
+		value = 100
+	}
+	ai_strategy = {
+		type = prepare_for_war
+		id = "PHI"
+		value = 100
+	}
+	ai_strategy = {
+		type = prepare_for_war
+		id = "USA"
+		value = 100
+	}
+	ai_strategy = {
+		type = prepare_for_war
+		id = "RAJ"
+		value = 100
+	}
+}

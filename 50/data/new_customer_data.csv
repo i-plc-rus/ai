@@ -1,0 +1,3 @@
+customer_id,credit_score,country,gender,age,tenure,balance,products_number,credit_card,active_member,estimated_salary
+15634602,619,France,Male,25,5,10000.0,1,1,1,98148.88
+15634605,332,Germany,Male,65,10,100000.0,3,1,0,220000.88
